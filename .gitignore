@@ -6,7 +6,6 @@ wandb
 outputs
 .vscode
 checkpoints
-data
 figs
 *.ipynb
 cache

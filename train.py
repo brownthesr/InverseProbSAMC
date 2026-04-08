@@ -12,10 +12,14 @@ from accelerate import Accelerator
 from utils.helper import create_logger, count_parameters, update_ema, unwrap_model
 
 
+# Loads in the config for pretrained model
 @hydra.main(version_base="1.3", config_path="configs/pretrain", config_name="navier-stokes")
 def main(config):
+    # Sets our thing to high precision
     if config.train.tf32:
         torch.set_float32_matmul_precision("high")
+
+    # Sets logger to wandb if specified
     wandb_log = "wandb" if config.log.wandb else None
     accelerator = Accelerator(log_with=wandb_log)
     if config.log.wandb:
@@ -25,16 +29,17 @@ def main(config):
             config=OmegaConf.to_container(config),
             init_kwargs=wandb_init_kwargs,
         )
-
+    # Sets up the experiment directory
     exp_dir = os.path.join(config.log.exp_dir, config.log.exp_name)
     os.makedirs(exp_dir, exist_ok=True)
+
+    # Sets up checkpoint directory
     ckpt_dir = os.path.join(exp_dir, "ckpts")
     os.makedirs(ckpt_dir, exist_ok=True)
     logger = create_logger(exp_dir, main_process=accelerator.is_main_process)
     logger.info(f"Experiment dir created at {exp_dir}")
 
-    # dataset
-
+    # Create Data
     dataset = instantiate(config.data)
 
     batch_size = config.train.batch_size // accelerator.num_processes
@@ -51,15 +56,18 @@ def main(config):
         drop_last=True,
     )
 
+    # Log everything
     logger.info(f"Dataset loaded with {len(dataset)} samples")
     # construct loss function
+    # Many of these use EDM loss which is interesting.
     loss_fn = instantiate(config.loss)
 
-    # build model
+    # build model. Not a super big model normally
     net = instantiate(config.model)
 
     logger.info(f"Number of parameters: {count_parameters(net)}")
 
+    # Make a deep copy of our net for exponential moving average.
     ema_net = copy.deepcopy(net).eval().requires_grad_(False).to(accelerator.device)
 
     # optimizer
@@ -106,7 +114,8 @@ def main(config):
                 )
             optimizer.step()
             scheduler.step()
-
+            
+            # Essentially we compute the EMA of the weights.
             ema_halflife_nimg = config.train.ema_halflife_nimg
             curr_nimg = training_steps * config.train.batch_size
             ema_halflife_nimg = min(ema_halflife_nimg, curr_nimg * ema_rampup_ratio)

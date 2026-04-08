@@ -1,0 +1,18 @@
+name: SPTIM
+method:
+  _target_: algo.sptim.SPTIM
+  diffusion_scheduler_config:
+    num_steps: 1000
+    schedule: 'vp'
+    timestep: 'vp'
+    scaling: 'vp'
+  guidance_scale: 2.0
+  num_langevin_steps: 5
+  inner_opt_steps: 0
+  num_samples: 10
+  inner_opt_lr: .01
+  second_order: False
+  n_chains: 10
+  max_beta: 5.0
+  step_size: .1
+

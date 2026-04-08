@@ -4,7 +4,7 @@ method:
   guidance_scale: 2.0
   num_updates: 2
   num_steps: 80
-  num_samples: 2048
+  num_samples: 2
   sigma_max: 80.0
   sigma_min: 0.002
   threshold: 0.1

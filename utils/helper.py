@@ -138,7 +138,7 @@ class EasyDict(dict):
 
 
 #----------------------------------------------------------------------------
-# logging info.
+# logging info. Basically adds a null handler to the non-main processes, but otherwise adds a console and file output log.
 def create_logger(logging_dir, main_process=True):
     """
     Create a logger that writes to a log file and stdout.

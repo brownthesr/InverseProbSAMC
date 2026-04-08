@@ -7,6 +7,6 @@ wandb: False       # If True, log to wandb
 exp_name: default  # Name of the experiment
 defaults:
   - _self_
-  - pretrain: navier-stokes
-  - problem: navier-stokes
-  - algorithm: enkg
+  - pretrain:  inv-scatter
+  - problem: inv-scatter
+  - algorithm: psamc

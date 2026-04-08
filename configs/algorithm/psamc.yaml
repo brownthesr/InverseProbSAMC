@@ -1,0 +1,21 @@
+name: PSAMC
+method:
+  _target_: algo.psamc.PSAMC
+  guidance_scale: 4000.0
+  diffusion_scheduler_config:
+    num_steps: 25
+    schedule: 'vp'
+    timestep: 'vp'
+    scaling: 'vp'
+  samc_iterations: 4000
+  alpha: .65
+  gamma1: .06
+  t0: .89
+  n_bins: 20
+  num_samples: 1
+  batch_size: 1
+  theta: .46
+  p1: .5
+  p2: .5
+
+

@@ -1,0 +1,34 @@
+
+program: main.py
+name: navier-stokes-psamc
+method: bayes
+metric:
+  goal: minimize
+  name: relative l2
+parameters:
+  algorithm.method.guidance_scale:
+    min: 500.0
+    max: 1000.0
+  algorithm.method.num_samples:
+    min: 2
+    max: 2000
+  algorithm.method.diffusion_scheduler_config.num_steps:
+    min: 10
+    max: 500
+early_terminate:
+  type: hyperband
+  max_iter: 1000
+  eta: 3
+  s: 3
+command:
+  - ${env}
+  - python
+  - ${program}
+  - problem=navier-stokes                          # Set the problem config
+  - problem.model.adaptive=False                    # Set the solver's adaptive time stepping to False to avoid too small time steps
+  - problem.data.root="../data/navier-stokes-val/Re200.0-t5.0"   # Path to the validation dataset
+  - algorithm=psamc                                 # Set the algorithm config
+  - pretrain=navier-stokes                          # Set the pre-trained model config
+  - wandb=True
+  - problem.data.id_list="0-0"                    # String that indicates the indices of data to use. "0-2" includes 0, 1, and 2. "0,3-4" includes 0, 3, and 4.
+  - ${args_no_hyphens}

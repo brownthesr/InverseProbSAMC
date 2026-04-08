@@ -1,0 +1,49 @@
+program: main.py
+name: inv-scatter-psamc
+method: bayes
+metric:
+  goal: maximize
+  name: psnr
+parameters:
+  algorithm.method.guidance_scale:
+    distribution: log_uniform_values
+    min: 500.0
+    max: 10000.0
+  algorithm.method.alpha:
+    min: .6
+    max: .9
+  algorithm.method.gamma1:
+    min: .01
+    max: .2 
+  algorithm.method.t0:
+    min: .1
+    max: 2.0
+  # algorithm.method.n_bins:
+  #   min: 5
+  #   max: 40
+  algorithm.method.theta:
+    min: .01
+    max: 1.5
+    # algorithm.method.p1:
+    #   min: 0.0
+    #   max: 1.0
+    # algorithm.method.p2:
+    #   min: 0.0
+    #   max: 1.0
+  # algorithm.method.num_samples:
+  #   min: 2
+  #   max: 512
+  # algorithm.method.diffusion_scheduler_config.num_steps:
+  #   min: 10
+  #   max: 500
+command:
+  - ${env}
+  - python
+  - ${program}
+  - problem=inv-scatter                           # Set the problem config
+  - algorithm=psamc                                 # Set the algorithm config
+  - pretrain=inv-scatter                          # Set the pre-trained model config
+  - wandb=True
+  - problem.data.root="../data/inv-scatter-val"   # Path to the validation dataset
+  - problem.data.id_list="0-2"                    # String that indicates the indices of data to use. "0-2" includes 0, 1, and 2. "0,3-4" includes 0, 3, and 4.
+  - ${args_no_hyphens}
